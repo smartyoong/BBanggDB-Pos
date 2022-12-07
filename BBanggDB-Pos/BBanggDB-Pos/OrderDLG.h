@@ -28,7 +28,7 @@ private:
 	CComboBox ComboProduct;
 	CSpinButtonCtrl SpinVolume;
 	CListBox ListCart;
-	CString CartSum;
+	//CString CartSum;
 	int SpinValue =0;
 	int totalvalue = 0;
 public:

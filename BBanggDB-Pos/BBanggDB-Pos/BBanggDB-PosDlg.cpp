@@ -36,6 +36,7 @@ BEGIN_MESSAGE_MAP(CBBanggDBPosDlg, CDialogEx)
 	ON_WM_TIMER()
 	ON_BN_CLICKED(IDC_BUTTON_ADD_PRODUCT, &CBBanggDBPosDlg::OnBnClickedButtonAddProduct)
 	ON_BN_CLICKED(IDC_BUTTON_ORDER, &CBBanggDBPosDlg::OnBnClickedButtonOrder)
+	ON_BN_CLICKED(IDC_BUTTON_STASTICS, &CBBanggDBPosDlg::OnBnClickedButtonStastics)
 END_MESSAGE_MAP()
 
 
@@ -55,7 +56,7 @@ BOOL CBBanggDBPosDlg::OnInitDialog()
 	DBLink = new CDatabase;
 	DBLink->OpenEx(_T("DSN=Localhost"));  //나중에 이 부분을 본인이 설정한 ODBC로 바꾸세요
 	DBSet = new CRecordset(DBLink);
-	//SetTimer(0, 5000,NULL); // 5초마다 재고현황 자동갱신
+	SetTimer(0, 5000,NULL); // 5초마다 재고현황 자동갱신
 	CString temp = _T("SELECT * FROM branch_stock ");
 	if (DBSet->Open(CRecordset::dynamic, temp))
 	{
@@ -192,42 +193,52 @@ void CBBanggDBPosDlg::OnBnClickedButtonOrder()
 			DBSet->Open(CRecordset::dynaset, stemp);
 			DBSet->GetFieldValue(short(0), price);
 			DBSet->Close();
+			price.Remove(',');
 
 			CString temp(_T("INSERT INTO order_info (branch_name, sale_price, customer_id, settlement_flag) VALUES("));
-			temp += _T("'") + dlg->GetBranchCus()[i].first + _T("'") + _T(",") + price; // 중간에 들어가는 콤마를 없애야함
+			temp += _T("'") + dlg->GetBranchCus()[i].first + _T("'") + _T(",") + price;
 			temp += _T(",") + dlg->GetBranchCus()[i].second + _T(", 'Y')");
 			temp += _T(", 'Y')");
-			ListCurrentProductInfo.AddString(temp);
 			DBLink->BeginTrans();
 			DBLink->ExecuteSQL(temp);
 			DBLink->CommitTrans();
-			DBSet->Open(CRecordset::dynaset, _T("SELECT LAST_INSERT_ID()"));
+			DBSet->Open(CRecordset::dynaset, _T("SELECT @@IDENTITY"));
 			CString ordernum;
 			DBSet->GetFieldValue(short(0), ordernum);
 			DBSet->Close();
 
-			/*
 			CString ttemp = _T("INSERT INTO order_product (order_no, product_name, sale_volume) VALUES(");
-			ttemp += ordernum + _T(",") + _T("'") + dlg->GetSQL()[i].first + _T("'") + _T(",") + CString(std::to_string(dlg->GetSQL()[i].second).c_str()) + _T(")");
-			ListCurrentProductInfo.AddString(ttemp);
+			ttemp += ordernum;
+			ttemp += _T(",");
+			ttemp += _T("'") + dlg->GetSQL()[i].first;
+			ttemp += _T("'");
+			ttemp += _T(",") + CString(std::to_string(dlg->GetSQL()[i].second).c_str());
+			ttemp += _T(")");
 			DBLink->BeginTrans();
+			DBLink->ExecuteSQL(_T("SET IDENTITY_INSERT order_product ON"));
 			DBLink->ExecuteSQL(ttemp);
+			DBLink->ExecuteSQL(_T("SET IDENTITY_INSERT order_product OFF"));
 			DBLink->CommitTrans();
 
-			CString tttemp = _T("UPDATE order_info SET settlement_datetime = NOW() WHERE order_no = ");
+			CString tttemp = _T("UPDATE order_info SET settlement_datetime = getdate() WHERE order_no = ");
 			tttemp += ordernum;
-			ListCurrentProductInfo.AddString(tttemp);
 			DBLink->BeginTrans();
 			DBLink->ExecuteSQL(tttemp);
 			DBLink->CommitTrans();
 
 			CString updateTemp = _T("UPDATE branch_stock SET stock_volume = stock_volume - ");
 			updateTemp += CString(std::to_string(dlg->GetSQL()[i].second).c_str()) += _T(" WHERE branch_name = '") + dlg->GetBranchCus()[i].first + _T("' AND product_name = '") + dlg->GetSQL()[i].first + _T("'");
-			ListCurrentProductInfo.AddString(updateTemp);
 			DBLink->BeginTrans();
 			DBLink->ExecuteSQL(updateTemp);
 			DBLink->CommitTrans();
-			*/
 		}
 	}
+}
+
+
+void CBBanggDBPosDlg::OnBnClickedButtonStastics()
+{
+	// TODO: Add your control notification handler code here
+	TotalAnalsys* end = new TotalAnalsys;
+	end->DoModal();
 }

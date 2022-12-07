@@ -6,6 +6,7 @@
 #include <map>
 #include "AddProduct.h"
 #include "OrderDLG.h"
+#include "TotalAnalsys.h"
 
 // CBBanggDBPosDlg dialog
 class CBBanggDBPosDlg : public CDialogEx
@@ -46,4 +47,5 @@ public:
 	void MakeMap();
 	afx_msg void OnBnClickedButtonAddProduct();
 	afx_msg void OnBnClickedButtonOrder();
+	afx_msg void OnBnClickedButtonStastics();
 };

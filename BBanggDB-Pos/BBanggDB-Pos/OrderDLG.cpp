@@ -14,7 +14,7 @@ IMPLEMENT_DYNAMIC(OrderDLG, CDialogEx)
 
 OrderDLG::OrderDLG(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_DIALOG_ORDER, pParent)
-	, CartSum(_T(""))
+	//, CartSum(_T(""))
 	, BrandName(_T(""))
 	, ProductName(_T(""))
 {
@@ -33,7 +33,7 @@ void OrderDLG::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_COMBO_PRODUCT, ComboProduct);
 	DDX_Control(pDX, IDC_SPIN_VOLUME, SpinVolume);
 	DDX_Control(pDX, IDC_LIST_CART, ListCart);
-	DDX_Text(pDX, IDC_EDIT_SUM, CartSum);
+	//DDX_Text(pDX, IDC_EDIT_SUM, CartSum);
 	DDX_CBString(pDX, IDC_COMBO_BRAND, BrandName);
 	DDX_CBString(pDX, IDC_COMBO_PRODUCT, ProductName);
 }
